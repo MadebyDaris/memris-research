@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
+
+# LTspice output files
+*.raw
+*.log
+*.op.raw
+
+# Temporary files
+*.tmp
