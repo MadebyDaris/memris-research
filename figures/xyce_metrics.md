@@ -1,0 +1,7 @@
+| System | Metric | Value |
+|---|---|---|
+| Single memristor | Switching time (s) | 8.500e-04 |
+| Single memristor | Energy per op (J) | 5.746e-03 |
+| Single memristor | Hysteresis area (A·V) | 1.347e+00 |
+| Crossbar | Read margin (|Vout|/|Vin|) | 0.407 |
+| Crossbar | Sneak path current ratio (mean/peak Irow) | 0.420 |

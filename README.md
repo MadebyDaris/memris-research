@@ -1,148 +1,120 @@
-# Memristor Research: State-of-the-Art Analysis
+# Memristive Computing: Device Physics, Crossbar Architectures, and Scalable Simulation
 
 [![Paper](https://img.shields.io/badge/Paper-PDF-red)](memristor-sota.pdf)
 
-Analysis of memristors and resistive switching for neuromorphic computing and in-memory computation.
-
-## Paper
-
-The full paper (`memristor-sota.pdf`) covers:
-- Historical evolution of memristors (Chua's theory to HP Labs 2008)
-- Resistive switching mechanisms (SET/RESET, bipolar vs unipolar)
-- Crossbar architectures (0T1R passive vs 1T1R active arrays)
-- Matrix-Vector Multiplication (MVM) using Ohm's Law + KCL
-- IR drop analysis and scalability challenges
-- Neuromorphic computing applications
-
-## Repository Structure
-
-```
-memris-research/
-├── memristor-sota.pdf      # Full paper
-├── README.md
-├── spice/                  # LTspice simulation files
-│   ├── memristor.sub       # Biolek memristor subcircuit model
-│   ├── memristor.asy       # LTspice symbol
-│   ├── memristorcharac.asc # I-V characterization circuit
-│   ├── PassiveCrossbar.asc # 3×3 passive (0T1R) array
-│   └── PassiveCrossbar1R1T.asc # 3×3 active (1T1R) array
-├── figures/                # Generated analysis plots
-│   ├── model_comparison.png
-│   ├── ir_drop_map.png
-│   ├── scalability_plot.png
-│   └── differentiable_sim.png
-└── demo.ipynb              # Interactive demonstration notebook
-```
-
-## SPICE Models
-
-### Biolek Memristor Model
-
-The memristor subcircuit (`spice/memristor.sub`) implements the Biolek window function model:
-
-```spice
-.SUBCKT memristor Plus Minus PARAMS:
-+ Ron=1K Roff=100K Rinit=80K D=10N uv=10F p=1
-
-* State variable ODE
-Gx 0 x value={ I(Emem)*uv*Ron/D^2*f(V(x),p) }
-Cx x 0 1 IC={(Roff-Rinit)/(Roff-Ron)}
-
-* Joglekar window function
-.func f(x,p)={1-(2*x-1)^(2*p)}
-
-.ENDS memristor
-```
-
-**Parameters:**
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `Ron` | Low resistance state (LRS) | 1 kΩ |
-| `Roff` | High resistance state (HRS) | 100 kΩ |
-| `Rinit` | Initial resistance | 80 kΩ |
-| `D` | Thin film width | 10 nm |
-| `uv` | Ion mobility coefficient | 10 fm²/Vs |
-| `p` | Window function exponent | 1 |
-
-### Running Simulations
-
-1. Open LTspice
-2. Add `memristor.sub` to your library path
-3. Open `PassiveCrossbar.asc` for passive array simulation
-4. Run transient analysis (`.tran 0 2m 0 1u`)
-
-## Key Results
-
-### I-V Hysteresis
-The memristor exhibits the characteristic "pinched hysteresis loop" - current passes through origin regardless of voltage polarity.
-
-![Model Comparison](figures/model_comparison.png)
-
-### IR Drop Analysis
-Wire resistance causes voltage attenuation in large arrays, limiting practical crossbar size:
-
-![IR Drop Map](figures/ir_drop_map.png)
-
-| Wire Resistance | MVM Error |
-|-----------------|-----------|
-| 0 Ω | 0% (ideal) |
-| 1 Ω | ~2% |
-| 10 Ω | ~8% |
-| 50 Ω | ~20% |
-
-### Scalability
-Simulation timing for crossbar arrays of increasing size:
-
-![Scalability](figures/scalability_plot.png)
-
-### Julia Simulation Framework (WIP)
-
-> **Note:** The Julia-based memristor simulation framework is still under development.
-
-The framework will include:
-- `ThresholdParams` / `VTEAMParams` - Device parameter structures
-- `simulate_memristor()` - Single device transient simulation
-- `CrossbarArray` - Crossbar array with conductance matrix
-- `simulate_crossbar_mvm()` - Matrix-vector multiplication
-- Sparse MNA solver for IR drop analysis
-- ForwardDiff.jl integration for differentiable simulation
-
-
-```julia
-# Device parameters
-params = ThresholdParams(
-    R_on = 1e3,      # 1 kΩ LRS
-    R_off = 100e3,   # 100 kΩ HRS
-    Vth_p = 0.5,     # +0.5V threshold
-    Vth_n = -0.5,    # -0.5V threshold
-    k_on = 1e4,      # SET rate
-    k_off = 1e4      # RESET rate
-)
-
-# Simulate with triangular voltage input
-result = simulate_memristor(params, (0.0, 2e-3), voltage_func)
-
-# Create crossbar array
-xbar = CrossbarArray(32, 32; R_on=1e3, R_off=100e3, R_wire=10.0)
-
-# Perform MVM with IR drop
-I_out = simulate_crossbar_mvm_with_ir(xbar, V_input)
-```
-
-Stay tuned for the full release!
-
-## References
-
-1. Chua, L. (1971). "Memristor—The missing circuit element." *IEEE Trans. Circuit Theory*
-2. Strukov, D. et al. (2008). "The missing memristor found." *Nature*
-3. Biolek, Z. et al. (2009). "SPICE model of memristor with nonlinear dopant drift." *Radioengineering*
-4. Kvatinsky, S. et al. (2015). "VTEAM: A general model for voltage-controlled memristors." *IEEE TCAS-II*
-
-For more you can check out, the *bibliography.bib* file.
-
+Repository for the paper **"Memristive Computing: Device Physics, Crossbar Architectures, and Scalable Simulation"**. 
+This project provides a comprehensive analysis of memristors, resistive switching, and their application to neuromorphic computing and in-memory computation, accompanied by both a lightweight pure-Julia simulation framework and integration with the high-performance Xyce simulator.
 
 ---
 
-Daris Idirene  
-Université Paris-Saclay  
-Faculty of Sciences - E3A Program
+## 📖 The Paper
+
+The full document explores:
+- **Theoretical Foundations**: The "fourth circuit element" proposed by Leon Chua and the HP Labs physical realization.
+- **Resistive Switching Physics**: ECM/VCM mechanisms and bipolar vs. unipolar switching behaviors.
+- **Crossbar Architectures**: Matrix-Vector Multiplication (MVM) engines, comparing Passive 0T1R and Active 1T1R arrays.  
+- **Circuit Simulation & Modeling**: Device nonlinearity tradeoffs and Non-idealities such as IR Drop formulations and Read Noise.
+- **Large-Scale Simulation Framework**: Introducing custom-built Julia packages mapping abstract memristive models to robust Spice engines.
+
+## Repository Structure
+
+The source code, papers, and simulation examples are organized as follows:
+
+```
+memristor-sota/
+├── memristor-sota.qmd       # Main paper source (Quarto/LaTeX)
+├── figures/                 # Images and plots generated for the paper
+├── MemristorODE/
+├── XyceSim/
+├── mmrstor_biolek/          # Xyce Biolek validation modules
+└── memris-research/         # Legacy LTSpice simulation files and early WIP
+```
+
+## Simulation Frameworks
+
+This repository introduces a unified codebase for advanced scalable memristor simulation, written natively in Julia:
+
+### 1. `MemristorODE` (Pure Julia)
+A lightweight standalone ODE-based memristor simulation package supporting **Threshold** and industry-standard **VTEAM** models. It models device parameters explicitly without needing external circuit simulators.
+
+- **Matrix Vector Multiplications**
+- **IR Drop Analysis**: Utilizes Sparse Modified Nodal Analysis (MNA) to trace voltage degradation natively across arrays.
+- **ForwardDiff.jl Integration**: Demonstrates differentiable programming to extract gradients—the fundamental step toward Hardware-Aware Neural Network Training directly on memristor physics limits.
+
+![Differentiable Simulation](figures/differentiable_sim.png)
+![Model Comparison](figures/model_comparison.png)
+
+```julia
+using MemristorODE
+
+# Build array & Define inputs
+xbar = CrossbarArray(32, 32, R_on=1e3, R_off=100e3)
+V_in = rand(32)
+
+# MNA IR drop simulation
+I_out = simulate_crossbar_mvm_with_ir(xbar, V_in) 
+```
+
+### 2. `XyceSim` (Parallel Xyce Wrapper)
+A high-performance scalable wrapper that bridges analytical Julia layouts with **Sandia National Labs' open-source Xyce simulator** using `Jyce`.
+
+- Enables extreme-scale crossbar netlist generation via the ADMS memristor plugins.
+- Allows rigorous validation of abstract threshold models against industry-level SPICE engines.
+
+```julia
+using XyceSim
+
+sim = XyceSim.create_simulator()
+xbar = XyceSim.create_crossbar_array(32, 32)
+results = XyceSim.run_and_plot_crossbar(sim, xbar)
+```
+
+## Key Results
+
+### Architecture Comparisons
+Using LTSpice formulations mapping passive (0T1R) against active selections (1T1R) which reduce sneak-path currents drastically while raising footprint sizes.
+
+![Passive Crossbar](passivecbaSim.png)
+
+### Scalability bounds & IR Drop Array Distortions
+Wire resistance poses significant voltage attention in larger arrays (the "IR drop" problem). Mapping the voltage node degradation isolates scaling limits for reliable neuromorphic edge inferencing.
+
+![IR Drop Map](figures/ir_drop_map.png)
+
+Simulation timings benchmarked for crossbar arrays demonstrate the efficiency of our pure-Julia IR analytical approach against traditional formulations:
+
+![Scalability Benchmark](figures/scalability_plot.png)
+
+## Getting Started
+
+Ensure you have **Julia 1.11+** installed alongside Python frameworks if extracting metric plots externally.
+
+To set up either simulation package locally via Julia REPL Pkg mode:
+
+```bash
+# Clone the repository
+git clone https://github.com/MadeByDaris/memristor-sota.git
+cd memristor-sota
+
+# Add the pure Julia Memristor engine
+julia -e 'using Pkg; Pkg.develop(path="MemristorODE")'
+
+# Add the Xyce wrapper (requires Jyce package and Xyce binaries)
+julia -e 'using Pkg; Pkg.develop(path="XyceSim")'
+```
+
+For executing GUI-based SPICE models directly, the `memris-research/spice` folder contains localized Biolek model `.sub` implementations and `memristor.asy` schematic symbols for **LTSpice**.
+
+## Key References
+
+- L. Chua (1971). "Memristor—The missing circuit element." *IEEE Trans. Circuit Theory*
+- D. Strukov, et al. (2008). "The missing memristor found." *Nature*
+- Z. Biolek, et al. (2009). "SPICE model of memristor with nonlinear dopant drift"
+- S. Kvatinsky, et al. (2015). "VTEAM: A general model for voltage-controlled memristors." 
+
+*(For a more thorough reading list, refer directly to `bibliography.bib` and the references index in the paper).*
+
+---
+
+**Daris Idirene** — Université Paris-Saclay  
+*Faculty of Sciences - E3A Program*
