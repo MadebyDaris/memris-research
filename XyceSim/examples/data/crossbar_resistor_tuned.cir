@@ -1,0 +1,22 @@
+* Tuned resistor crossbar for read-margin validation
+
+VROW_1 in_1 0 PULSE(0 0.100000 0 5n 5n 2e-06 8e-06)
+VROW_2 in_2 0 DC 0
+VROW_3 in_3 0 PULSE(0 0.100000 0 5n 5n 2e-06 8e-06)
+RLOAD_1 out_1 0 10000
+RLOAD_2 out_2 0 10000
+RLOAD_3 out_3 0 10000
+
+R_1_1 in_1 out_1 1000
+R_1_2 in_1 out_2 180400
+R_1_3 in_1 out_3 300000
+R_2_1 in_2 out_1 300000
+R_2_2 in_2 out_2 180400
+R_2_3 in_2 out_3 1000
+R_3_1 in_3 out_1 1000
+R_3_2 in_3 out_2 180400
+R_3_3 in_3 out_3 300000
+
+.TRAN 2e-08 8e-06
+.PRINT TRAN V(IN_1) V(IN_2) V(IN_3) V(OUT_1) V(OUT_2) V(OUT_3) I(VROW_1) I(VROW_2) I(VROW_3) I(RLOAD_1) I(RLOAD_2) I(RLOAD_3)
+.END

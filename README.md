@@ -7,7 +7,7 @@ This project provides a comprehensive analysis of memristors, resistive switchin
 
 ---
 
-## 📖 The Paper
+## The Paper
 
 The full document explores:
 - **Theoretical Foundations**: The "fourth circuit element" proposed by Leon Chua and the HP Labs physical realization.

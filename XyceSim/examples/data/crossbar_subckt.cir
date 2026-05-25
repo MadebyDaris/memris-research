@@ -1,0 +1,23 @@
+* Crossbar array netlist (subckt)
+.INCLUDE "/home/daris/Documents/workspace/memristor_proj/mmrstor_biolek/biolek_mmrstor_model.sub"
+
+VROW_1 in_1 0 SIN(0 0.05 1000)
+VROW_2 in_2 0 SIN(0 0.05 1000)
+VROW_3 in_3 0 SIN(0 0.05 1000)
+RLOAD_1 out_1 0 10k
+RLOAD_2 out_2 0 10k
+RLOAD_3 out_3 0 10k
+
+XMEM_1_1 in_1 out_1 w_1_1 MEM_BIOLEK
+XMEM_1_2 in_1 out_2 w_1_2 MEM_BIOLEK
+XMEM_1_3 in_1 out_3 w_1_3 MEM_BIOLEK
+XMEM_2_1 in_2 out_1 w_2_1 MEM_BIOLEK
+XMEM_2_2 in_2 out_2 w_2_2 MEM_BIOLEK
+XMEM_2_3 in_2 out_3 w_2_3 MEM_BIOLEK
+XMEM_3_1 in_3 out_1 w_3_1 MEM_BIOLEK
+XMEM_3_2 in_3 out_2 w_3_2 MEM_BIOLEK
+XMEM_3_3 in_3 out_3 w_3_3 MEM_BIOLEK
+
+.TRAN 1.0e-5 0.0001
+.PRINT TRAN V(in_1) V(out_1) I(VROW_1)
+.END

@@ -1,0 +1,30 @@
+* HP Memristor SPICE Model Using Biolek Window
+
+* Connections:
+* TE:  Top electrode
+* BE:  Bottom electrode
+* XSV: External connection to plot state variable
+*      that is not used otherwise
+
+.SUBCKT MEM_BIOLEK TE BE XSV 
+
+* Ron:  Minimum device resistance
+* Roff: Maximum device resistance
+* D:    Width of the thin film
+* uv:   Dopant mobility
+* p:    Parameter for window function
+* x0:   State varaible initial value
+
+.PARAM Ron=100 Roff=1K x0=.076 D=16N uv=40F p=7
+
+* Circuit to determine state variable
+* Avoid illegal I(Gmem) lead-current reference by expanding i_mem explicitly.
+* i_mem = V(TE,BE)/(Ron*w + Roff*(1-w)), where w = V(XSV,0)
+Gx 0 XSV value={(V(TE,BE)/(Ron*V(XSV,0)+Roff*(1-V(XSV,0))))*Ron*uv*(1-pow((V(XSV,0)-if((-(V(TE,BE)/(Ron*V(XSV,0)+Roff*(1-V(XSV,0)))))>=0,1,0)),(2*p)))/pow(D,2)}
+Cx XSV 0 {1}
+.ic V(XSV)={x0}
+
+* Current source representing memristor (inlined IV relationship)
+Gmem TE BE value={V(TE,BE)/(Ron*V(XSV,0) + Roff*(1 - V(XSV,0)))}
+
+.ENDS MEM_BIOLEK

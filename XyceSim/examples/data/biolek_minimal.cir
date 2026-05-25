@@ -1,0 +1,7 @@
+* Minimal Biolek test
+.INCLUDE "/home/daris/Documents/workspace/memristor_proj/mmrstor_biolek/biolek_mmrstor_model.sub"
+V1 IN 0 SIN(0 25.0 250.0)
+XMEM IN 0 WPOS MEM_BIOLEK
+.TRAN 1.0e-5 0.01
+.PRINT TRAN V(IN) I(V1)
+.END
